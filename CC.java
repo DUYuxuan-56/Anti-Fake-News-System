@@ -1,5 +1,7 @@
+//import org.apache.kafka.common.serialization.Serdes;
+import org.slf4j.LoggerFactory;
 import java.util.Properties;
-import java.util.Arrays;
+import java.util.*;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -8,7 +10,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 public class CC {
-   private List<String> l;
+   private static List<String> l;
 
    public static void main(String[] args) throws Exception{
 
@@ -20,70 +22,71 @@ public class CC {
 		String hash=hash(l);
 		commit(sig,hash);
 	}
-	private String hash(List<String> content) {
+	private static String hash(List<String> content) {
 		return "todo";
     }
-	private void genContent() {
+	private static void genContent() {
         l = new ArrayList<String>(1024);
         String somebigContent = "faldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurewqodfnmdsalkfjdsalkfjaslkfajflasdjfadslfkajdflkjfdalkadfjlkdfjfadsflkjafaldskfjalkdsjfalkfdjasfoeiurqoeueoirqueroqiewurvcvmvcmdoiZZ";
         for (int i = 0; i < 10; i++) {
             l.add(somebigContent + i);
         }
     }
-    private void broadcastContentToUser() {
+    private static void broadcastContentToUser() {
 		String topicName = "CC_TO_User"; 
 		Properties props = new Properties();
 
-		props.put("bootstrap.servers", "localhost:9092");  
+		props.put("bootstrap.servers", "manta.uwaterloo.ca:9092");  
 		props.put("acks", "all");
 		props.put("retries", 0);
 		props.put("batch.size", 16384);
 		props.put("buffer.memory", 33554432);
 		props.put("key.serializer", 
-		 "org.apache.kafka.common.serializa-tion.StringSerializer");
+		 "org.apache.kafka.common.serialization.StringSerializer");
 		props.put("value.serializer", 
-		 "org.apache.kafka.common.serializa-tion.StringSerializer");
+		 "org.apache.kafka.common.serialization.StringSerializer");
         //send to kafka
-    	Producer<String, List<String>> producer = new KafkaProducer<String, List<String>>(props);
+    	Producer<String, String> producer = new KafkaProducer<String, String>(props);
 	   
-		producer.send(new ProducerRecord<String, List<String>>(topicName,"1", l));//key,value
+	    String string = String.join(",", l);
+		producer.send(new ProducerRecord<String, String>(topicName,"1", string));//key,value
 		System.out.println("Content sent to user successfully");
 		producer.close();
     }
-    private void broadcastContentToAA() {
+    private static void broadcastContentToAA() {
     	//Assign topicName to string variable
 		String topicName = "CC_TO_AA"; 
 		Properties props = new Properties();
-		//Assign localhost id
-		props.put("bootstrap.servers", "localhost:9092");  
+		props.put("bootstrap.servers", "manta.uwaterloo.ca:9092");  
 		props.put("acks", "all");
 		props.put("retries", 0);
 		props.put("batch.size", 16384);
 		props.put("buffer.memory", 33554432);
 		props.put("key.serializer", 
-		 "org.apache.kafka.common.serializa-tion.StringSerializer");
+		 "org.apache.kafka.common.serialization.StringSerializer");
 		props.put("value.serializer", 
-		 "org.apache.kafka.common.serializa-tion.StringSerializer");
+		 "org.apache.kafka.common.serialization.StringSerializer");
         //send to kafka
-    	Producer<String, List<String>> producer = new KafkaProducer<String, List<String>>(props);
+    	Producer<String, String> producer = new KafkaProducer<String, String>(props);
 	   
-		producer.send(new ProducerRecord<String, List<String>>(topicName,"1", l));//key,value
+	    String string = String.join(",", l);
+		producer.send(new ProducerRecord<String, String>(topicName,"1", string));//key,value
 		System.out.println("Content sent to AA successfully");
 		producer.close();
     }
-    private String pollCollectiveSig() {
+    private static String pollCollectiveSig() {
         String topicName = "AA_TO_CC";
 		Properties props = new Properties();
 
-		props.put("bootstrap.servers", "localhost:9092");
+		props.put("bootstrap.servers", "manta.uwaterloo.ca:9092");
 		props.put("group.id", "test");
 		props.put("enable.auto.commit", "true");
 		props.put("auto.commit.interval.ms", "1000");
 		props.put("session.timeout.ms", "30000");
 		props.put("key.deserializer", 
-		 "org.apache.kafka.common.serializa-tion.StringDeserializer");
+		 "org.apache.kafka.common.serialization.StringDeserializer");
 		props.put("value.deserializer", 
-		 "org.apache.kafka.common.serializa-tion.StringDeserializer");
+		 "org.apache.kafka.common.serialization.StringDeserializer");
 
 		KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
 		consumer.subscribe(Arrays.asList(topicName));
@@ -96,7 +99,7 @@ public class CC {
 				return record.value();
 		}
     }
-    private void commit(String sig,String hash) {
+    private static void commit(String sig,String hash) {
     	//signature + hash of the content
     	return;
     }
