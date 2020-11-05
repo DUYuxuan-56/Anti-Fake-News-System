@@ -8,12 +8,16 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 public class User {
 	
 	public static void main(String [] args) throws Exception {
-		String content=pollContent();
-		String hash=hash(content);
-		query(hash);
+		String content = pollContent();
+		String hash = hash(content);
+		String sig = query(hash);
+		if (sig!=null){
+			//cosi.Verify(testSuite, publics, message, sig, p)
+		};
 
     }
     private static String hash(String content) {
+    	//String sha256hex = org.apache.commons.codec.digest.DigestUtils.sha256Hex(content); 
     	return "todo";
     }
     private static String pollContent() {
@@ -41,7 +45,7 @@ public class User {
 				return record.value();
 		}
     }
-    private static void query(String sig) {
-    	return;
+    private static String query(String sig) {
+    	return "";
     }
 }

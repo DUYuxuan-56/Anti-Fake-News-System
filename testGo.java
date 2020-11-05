@@ -1,13 +1,26 @@
 import com.sun.jna.*;
+import java.util.*;
 
 public class testGo {
   public interface Cosi extends Library {
-    void TestCoSi(String m,int a, int b);
+  	public class GoString extends Structure {
+  	  public static class ByValue extends GoString implements Structure.ByValue {}
+      public String p;
+      public long n;
+      protected List getFieldOrder(){
+        return Arrays.asList(new String[]{"p","n"});
+	  }
+
+    }
+    void TestCoSi(GoString.ByValue m,long a, long b);
   }
   static public void main(String argv[]) {
     Cosi cosi = (Cosi) Native.load(
       "./cosi.so", Cosi.class);
-    String message="hallo";
-    cosi.TestCoSi(message,3, 0);
+
+    Cosi.GoString.ByValue message = new Cosi.GoString.ByValue();
+    message.p = "hallo";
+    message.n = message.p.length();
+    cosi.TestCoSi(message,5, 1);
   }
 }

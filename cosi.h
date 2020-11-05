@@ -69,7 +69,7 @@ extern "C" {
 #endif
 
 
-extern void TestCoSi(GoSlice p0, GoInt p1, GoInt p2);
+extern void TestCoSi(GoString p0, GoInt p1, GoInt p2);
 
 #ifdef __cplusplus
 }

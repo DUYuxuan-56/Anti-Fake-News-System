@@ -39,18 +39,19 @@ func main() {
 
     fmt.Printf("Message to sign: %s\n\n",m)
     //message := []byte(m)
-    //testCoSi(message,3, 0)
+    TestCoSi(m,3, 0)
 }
 //export TestCoSi
-func TestCoSi(message []byte, n, f int) {
-    
+func TestCoSi(m string, n int, f int) {
+
+    message := []byte(m)
     testSuite := &cosiSuite{edwards25519.NewBlakeSHA256Ed25519(), blake2xb.New(nil)}
 
     // Generate key pairs
     var kps []*key.Pair
     var privates []kyber.Scalar
     var publics []kyber.Point
-
+    
     for i := 0; i < n; i++ {
             kp := key.NewKeyPair(testSuite)
             kp.Private = testSuite.Scalar().Pick(random.New())
